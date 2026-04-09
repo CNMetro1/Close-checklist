@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1A1C21">
     
-    <!-- iOS Specific Meta Tags for Search & Standalone -->
+    <!-- PWA Primary Trigger: Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Closing Checklist">
+    
+    <!-- iOS Specific Meta Tags -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzFBMUMyMSIvPjxwYXRoIGQ9Ik0zNjAgMTYwSDE1MmMtMTEgMC0yMCA5LTIwIDIwdjE3MmMwIDExIDkgMjAgMjAgMjBoMjA4YzExIDAgMjAtOSAyMC0yMFYxODBjMC0xMS05LTIwLTIwLTIwem0tMjAgMTg0SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2eiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjU2IDgwaC00MHY0MGg4MFY4MGgtNDB6IiBmaWxsPSIjMjJDNTVFIi8+PC9zdmc+">
     
     <title>CN Metro: Closing Checklists</title>
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" id="pwa-manifest">
+    <!-- PWA Manifest Generated via Data URI for Instant Availability -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkNsb3NpbmcgQ2hlY2tsaXN0IiwKICAic2hvcnRfbmFtZSI6ICJDbG9zZUNoZWNrIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGOEY5RkEiLAogICJ0aGVtZV9jb2xvciI6ICIjMUExQzIxIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvOTI0LzkyNDUxNC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -378,67 +381,60 @@
         </div>
     </div>
 
+    <!-- PWA Service Worker Logic -->
     <script>
-        // Enhanced PWA Setup for Search indexing
-        const appIcon = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzFBMUMyMSIvPjxwYXRoIGQ9Ik0zNjAgMTYwSDE1MmMtMTEgMC0yMCA5LTIwIDIwdjE3MmMwIDExIDkgMjAgMjAgMjBoMjA4YzExIDAgMjAtOSAyMC0yMFYxODBjMC0xMS05LTIwLTIwLTIwem0tMjAgMTg0SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2eiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjU2IDgwaC00MHY0MGg4MFY4MGgtNDB6IiBmaWxsPSIjMjJDNTVFIi8+PC9zdmc+`;
-
-        const manifest = {
-            "name": "Closing Checklist",
-            "short_name": "Checklist",
-            "start_url": "./index.html",
-            "scope": "./",
-            "display": "standalone",
-            "orientation": "portrait",
-            "background_color": "#F8F9FA",
-            "theme_color": "#1A1C21",
-            "description": "Closing checklists and handover for CN Metro.",
-            "categories": ["business", "productivity"],
-            "icons": [
-                {
-                    "src": appIcon,
-                    "sizes": "512x512",
-                    "type": "image/svg+xml",
-                    "purpose": "any maskable"
-                }
-            ]
-        };
-
-        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-        document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
-
         if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'closing-v3';
-                self.addEventListener('install', e => self.skipWaiting());
-                self.addEventListener('fetch', e => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+            window.addEventListener('load', function() {
+                const swCode = `
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(clients.claim());
+                    });
+                    self.addEventListener('fetch', (event) => {
+                        event.respondWith(
+                            fetch(event.request).catch(() => {
+                                return caches.match(event.request);
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('ServiceWorker registered');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
                 });
-            `;
-            const swBlob = new Blob([swCode], {type: 'text/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+            });
         }
 
+        // Handle the Install Prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('pwa-download-btn').style.display = 'block';
+            const installBtn = document.getElementById('pwa-download-btn');
+            if(installBtn) installBtn.style.display = 'block';
         });
 
-        document.getElementById('pwa-download-btn').addEventListener('click', () => {
+        document.getElementById('pwa-download-btn')?.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('pwa-download-btn').style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                });
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwa-download-btn').style.display = 'none';
+                }
+                deferredPrompt = null;
             } else {
-                showFeedback("Use Share -> Add to Home Screen");
+                showFeedback("Use browser menu to install");
             }
         });
+    </script>
 
+    <script>
         const SHIFT_CONFIG = {
             'weekday': { closeTime: 21, label: 'Weekday (9pm)' },
             'saturday': { closeTime: 20, label: 'Saturday (8pm)' },
@@ -640,8 +636,10 @@
 
         function showFeedback(msg) {
             const feedback = document.getElementById('copy-feedback');
-            feedback.innerText = msg.toUpperCase();
-            setTimeout(() => feedback.innerText = "", 2000);
+            if(feedback) {
+                feedback.innerText = msg.toUpperCase();
+                setTimeout(() => feedback.innerText = "", 2000);
+            }
         }
 
         window.handleModToggle = () => {
@@ -708,8 +706,9 @@
             if (modEnabled) document.getElementById('mod-input-container').classList.add('visible');
             if (localStorage.getItem('audit_clockout_enabled') === 'true') {
                 document.getElementById('clockout-toggle').checked = true;
-                document.getElementById('clockout-time-badge').innerText = localStorage.getItem('audit_clockout_time');
-                document.getElementById('clockout-time-badge').classList.remove('hidden');
+                const clockTimeBadge = document.getElementById('clockout-time-badge');
+                clockTimeBadge.innerText = localStorage.getItem('audit_clockout_time');
+                clockTimeBadge.classList.remove('hidden');
             }
             currentShift = localStorage.getItem('audit_shift') || 'weekday';
             setShift(currentShift);
@@ -717,4 +716,3 @@
     </script>
 </body>
 </html>
-
