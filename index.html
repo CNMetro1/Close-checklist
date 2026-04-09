@@ -405,10 +405,10 @@
             const swCode = `
                 const CACHE_NAME = 'closing-v2';
                 self.addEventListener('install', e => {
-                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                    self.skipWaiting();
                 });
                 self.addEventListener('fetch', e => {
-                    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
                 });
             `;
             const swBlob = new Blob([swCode], {type: 'text/javascript'});
@@ -431,6 +431,9 @@
                     }
                     deferredPrompt = null;
                 });
+            } else {
+                // If on iOS or prompt not available, show manual instructions
+                showFeedback("Use browser menu to 'Add to Home Screen'");
             }
         });
 
@@ -780,4 +783,3 @@ ${notes}`;
     </script>
 </body>
 </html>
-
