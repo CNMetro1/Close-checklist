@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1A1C21">
+    
+    <!-- iOS Specific Meta Tags for Search & Standalone -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Closing Checklist">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzFBMUMyMSIvPjxwYXRoIGQ9Ik0zNjAgMTYwSDE1MmMtMTEgMC0yMCA5LTIwIDIwdjE3MmMwIDExIDkgMjAgMjAgMjBoMjA4YzExIDAgMjAtOSAyMC0yMFYxODBjMC0xMS05LTIwLTIwLTIwem0tMjAgMTg0SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2eiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjU2IDgwaC00MHY0MGg4MFY4MGgtNDB6IiBmaWxsPSIjMjJDNTVFIi8+PC9zdmc+">
+    
     <title>CN Metro: Closing Checklists</title>
     
     <!-- PWA Manifest -->
@@ -251,7 +255,6 @@
             margin-top: 1rem;
         }
 
-        /* PWA Download Button Position */
         #pwa-download-btn {
             position: absolute;
             top: 1.5rem;
@@ -263,6 +266,7 @@
             cursor: pointer;
             transition: all 0.2s;
             border: 1px solid var(--audit-border);
+            z-index: 10;
         }
 
         #pwa-download-btn:active {
@@ -274,7 +278,6 @@
 <body class="p-4 md:p-8">
 
     <div class="max-w-4xl mx-auto main-container p-6 md:p-10">
-        <!-- PWA Download Icon -->
         <div id="pwa-download-btn" title="Install App">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
@@ -376,17 +379,20 @@
     </div>
 
     <script>
-        // PWA Setup
+        // Enhanced PWA Setup for Search indexing
         const appIcon = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzFBMUMyMSIvPjxwYXRoIGQ9Ik0zNjAgMTYwSDE1MmMtMTEgMC0yMCA5LTIwIDIwdjE3MmMwIDExIDkgMjAgMjAgMjBoMjA4YzExIDAgMjAtOSAyMC0yMFYxODBjMC0xMS05LTIwLTIwLTIwem0tMjAgMTg0SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2eiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjU2IDgwaC00MHY0MGg4MFY4MGgtNDB6IiBmaWxsPSIjMjJDNTVFIi8+PC9zdmc+`;
 
         const manifest = {
             "name": "Closing Checklist",
-            "short_name": "Closing Checklist",
-            "start_url": ".",
+            "short_name": "Checklist",
+            "start_url": "./index.html",
+            "scope": "./",
             "display": "standalone",
+            "orientation": "portrait",
             "background_color": "#F8F9FA",
             "theme_color": "#1A1C21",
-            "description": "Daily closing checklists and handover tool for CN Metro staff.",
+            "description": "Closing checklists and handover for CN Metro.",
+            "categories": ["business", "productivity"],
             "icons": [
                 {
                     "src": appIcon,
@@ -400,13 +406,10 @@
         const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             const swCode = `
-                const CACHE_NAME = 'closing-v2';
-                self.addEventListener('install', e => {
-                    self.skipWaiting();
-                });
+                const CACHE_NAME = 'closing-v3';
+                self.addEventListener('install', e => self.skipWaiting());
                 self.addEventListener('fetch', e => {
                     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
                 });
@@ -432,8 +435,7 @@
                     deferredPrompt = null;
                 });
             } else {
-                // If on iOS or prompt not available, show manual instructions
-                showFeedback("Use browser menu to 'Add to Home Screen'");
+                showFeedback("Use Share -> Add to Home Screen");
             }
         });
 
@@ -445,104 +447,67 @@
 
         const ALL_CLOSING_TASKS = {
             'bar': [
-                { 
-                    title: 'Staggered Side 3 Clean-down (4-4.30pm)', 
-                    tasks: [
-                        { text: 'Clean & Wipe Down Coffee Machine (Pulycaf Group Heads/Handles), Clean Drip Tray & Steam Wands, Empty/Clean Grounds Bin.', fixedTime: '4:00pm' },
-                        { text: 'Wash Side 3 Tools (Jugs/Shots/Probes) & Clean Bench, Fridges and Side 2 space', fixedTime: '4:30pm' }
-                    ] 
-                },
-                { 
-                    title: 'Closing-Prep (2-3hr to close)', 
-                    tasks: [
-                        { text: 'Clean & Bag Grounds Bin, Wipe all Fridges & Clean Microwave', offset: -2.75 },
-                        { text: 'Cool 1st Oven & Take off 1st Coffee Handle', offset: -2.25 },
-                        { text: 'Alt Milk/Dry Stock List & Gather Tools for Cleaning (Neaten Side 1)', offset: -1.75, showStockToggle: true }
-                    ] 
-                },
-                { 
-                    title: 'Staggered Bar Clean & Restock (1hr to close)', 
-                    tasks: [
-                        { text: '2nd handle off, Sweep Bar Floor & Clean Food/Blender Area', offset: -1.0 },
-                        { text: 'Restock: Dry Stock (Lids, Cups, Syrups etc), Matcha, Cream & Bases', offset: -0.7 },
-                        { text: 'Check Bar Milk Fridge for OOD Waste & Restock Milks', offset: -0.583, showMilkStockToggle: true }
-                    ] 
-                },
-                { 
-                    title: 'Bar Close Down (30min to close)', 
-                    tasks: [
-                        { text: 'Final Dishwash Load: Send all large tools to BOH. Hand-wash Probes & Shot glasses at Bar Sink.', offset: -0.5 },
-                        { text: '3rd handle off, Cool 2nd Oven & Spot Clean Bar/Side 1', offset: -0.3 },
-                        { text: 'Final Handle off, Clean Drip Tray/Steam Wands & Machine Wipe', offset: -0.05 }
-                    ] 
-                },
-                { 
-                    title: 'Last Bar Close Tasks (At Close)', 
-                    tasks: [
-                        { text: 'Empty/Change Bar & Floor Bins (Fresh Bag in Grounds Bin)', offset: 0 },
-                        { text: 'Process Wastage & Reset Bar Tools for Open', offset: 0.15, showWastageToggle: true },
-                        { text: 'Mop Bar Floor & Floor Tiles (additional spot clean if needed)', offset: 0.333 }
-                    ] 
-                },
-                { 
-                    title: 'Final Checks (Post-Close)', 
-                    tasks: [
-                        { text: 'Coffee Machines, Grinders & Blenders Switched Off', offset: 0.5 },
-                        { text: 'Fridge Lights & Bar/FOH lights off', offset: 0.5 },
-                        { text: 'Bins/Cardboard Taken Out', offset: 0.5 }
-                    ] 
-                }
+                { title: 'Staggered Side 3 Clean-down (4-4.30pm)', tasks: [
+                    { text: 'Clean & Wipe Down Coffee Machine (Pulycaf Group Heads/Handles), Clean Drip Tray & Steam Wands, Empty/Clean Grounds Bin.', fixedTime: '4:00pm' },
+                    { text: 'Wash Side 3 Tools (Jugs/Shots/Probes) & Clean Bench, Fridges and Side 2 space', fixedTime: '4:30pm' }
+                ]},
+                { title: 'Closing-Prep (2-3hr to close)', tasks: [
+                    { text: 'Clean & Bag Grounds Bin, Wipe all Fridges & Clean Microwave', offset: -2.75 },
+                    { text: 'Cool 1st Oven & Take off 1st Coffee Handle', offset: -2.25 },
+                    { text: 'Alt Milk/Dry Stock List & Gather Tools for Cleaning (Neaten Side 1)', offset: -1.75, showStockToggle: true }
+                ]},
+                { title: 'Staggered Bar Clean & Restock (1hr to close)', tasks: [
+                    { text: '2nd handle off, Sweep Bar Floor & Clean Food/Blender Area', offset: -1.0 },
+                    { text: 'Restock: Dry Stock (Lids, Cups, Syrups etc), Matcha, Cream & Bases', offset: -0.7 },
+                    { text: 'Check Bar Milk Fridge for OOD Waste & Restock Milks', offset: -0.583, showMilkStockToggle: true }
+                ]},
+                { title: 'Bar Close Down (30min to close)', tasks: [
+                    { text: 'Final Dishwash Load: Send all large tools to BOH. Hand-wash Probes & Shot glasses at Bar Sink.', offset: -0.5 },
+                    { text: '3rd handle off, Cool 2nd Oven & Spot Clean Bar/Side 1', offset: -0.3 },
+                    { text: 'Final Handle off, Clean Drip Tray/Steam Wands & Machine Wipe', offset: -0.05 }
+                ]},
+                { title: 'Last Bar Close Tasks (At Close)', tasks: [
+                    { text: 'Empty/Change Bar & Floor Bins (Fresh Bag in Grounds Bin)', offset: 0 },
+                    { text: 'Process Wastage & Reset Bar Tools for Open', offset: 0.15, showWastageToggle: true },
+                    { text: 'Mop Bar Floor & Floor Tiles (additional spot clean if needed)', offset: 0.333 }
+                ]},
+                { title: 'Final Checks (Post-Close)', tasks: [
+                    { text: 'Coffee Machines, Grinders & Blenders Switched Off', offset: 0.5 },
+                    { text: 'Fridge Lights & Bar/FOH lights off', offset: 0.5 },
+                    { text: 'Bins/Cardboard Taken Out', offset: 0.5 }
+                ]}
             ],
             'floor_boh': [
-                { 
-                    title: 'Pre Close Prep (3-4:30pm)', 
-                    fixedTime: '4:30pm',
-                    tasks: [
-                        { text: 'Top Up/Restock: Grab & Go, Bottled Drinks, and Alt Milks', showInitialRestockToggle: true },
-                        { text: 'Defrost Cakes/Muffins/Teacakes/Deli for next day', showDefrostToggle: true }
-                    ] 
-                },
-                { 
-                    title: 'Toilets & Balcony Cleaning (2-3hr to Close)', 
-                    tasks: [
-                        { text: 'Clean & Mop Toilets (Mirror, Sinks, Dryer, Babychange, Bins)', offset: -3 },
-                        { text: 'Clear Balcony (Clear, Sweep, Clean & Empty/Change Bin)', offset: -2 }
-                    ] 
-                },
-                { 
-                    title: 'Kitchen & Bar Tools Cleaning (Staggered)', 
-                    tasks: [
-                        { text: 'Clean Kitchen Surfaces & Sweep/Mop Floor', offset: -1 },
-                        { text: 'Clean/Wash Bar Tools & Load Trolley', offset: -0.666 }
-                    ] 
-                },
-                {
-                    title: 'Final Closing Prep (30min to close)',
-                    tasks: [
-                        { text: 'Clear Floor & Tables + Wash Last Dishes', offset: -0.4 },
-                        { text: 'Confirm Bar is finished with machine; then Switch off & Clean Dishwash (drain, rinse, re-salt, clean cycle, wipe unit/sink)', offset: -0.16 },
-                        { text: 'Return all Bar Tools & Dishes to stations', offset: -0.1 },
-                        { text: 'Check Food Fridge for OOD Waste + Gather Milk/Restock items', offset: -0.05, showFridgeTripleToggle: true },
-                        { text: 'Bring Cakes/Defrost items to Front', offset: -0.05 }
-                    ]
-                },
-                {
-                    title: 'Lockup & Spot Cleaning (At Close)',
-                    tasks: [
-                        { text: 'Lock Shutters & Put Tills in Safe', offset: 0 },
-                        { text: 'Sweep Floor/FOH & Empty Kitchen Bins/Cardboard', offset: 0.1 },
-                        { text: 'Spot Clean: Kitchen Floor & Toilets', offset: 0.3 },
-                        { text: 'Restock Food/Deli Fridge, Muffins, Teacakes (re-check drinks/grab & go)', offset: 0.45, showFinalDrinksToggle: true }
-                    ]
-                },
-                {
-                    title: 'Final Check (Post-Close)',
-                    tasks: [
-                        { text: 'Switch off Boiler & BOH Lights (Staffroom, Stock, Office, Kitchen, Hall)', offset: 0.5 },
-                        { text: 'Daily Cleaning, Weekly Tasks, Energy & PM Temp Checks completed', offset: 0.5 },
-                        { text: 'Bins & Cardboard Taken Out', offset: 0.5 }
-                    ]
-                }
+                { title: 'Pre Close Prep (3-4:30pm)', fixedTime: '4:30pm', tasks: [
+                    { text: 'Top Up/Restock: Grab & Go, Bottled Drinks, and Alt Milks', showInitialRestockToggle: true },
+                    { text: 'Defrost Cakes/Muffins/Teacakes/Deli for next day', showDefrostToggle: true }
+                ]},
+                { title: 'Toilets & Balcony Cleaning (2-3hr to Close)', tasks: [
+                    { text: 'Clean & Mop Toilets (Mirror, Sinks, Dryer, Babychange, Bins)', offset: -3 },
+                    { text: 'Clear Balcony (Clear, Sweep, Clean & Empty/Change Bin)', offset: -2 }
+                ]},
+                { title: 'Kitchen & Bar Tools Cleaning (Staggered)', tasks: [
+                    { text: 'Clean Kitchen Surfaces & Sweep/Mop Floor', offset: -1 },
+                    { text: 'Clean/Wash Bar Tools & Load Trolley', offset: -0.666 }
+                ]},
+                { title: 'Final Closing Prep (30min to close)', tasks: [
+                    { text: 'Clear Floor & Tables + Wash Last Dishes', offset: -0.4 },
+                    { text: 'Confirm Bar is finished with machine; then Switch off & Clean Dishwash (drain, rinse, re-salt, clean cycle, wipe unit/sink)', offset: -0.16 },
+                    { text: 'Return all Bar Tools & Dishes to stations', offset: -0.1 },
+                    { text: 'Check Food Fridge for OOD Waste + Gather Milk/Restock items', offset: -0.05, showFridgeTripleToggle: true },
+                    { text: 'Bring Cakes/Defrost items to Front', offset: -0.05 }
+                ]},
+                { title: 'Lockup & Spot Cleaning (At Close)', tasks: [
+                    { text: 'Lock Shutters & Put Tills in Safe', offset: 0 },
+                    { text: 'Sweep Floor/FOH & Empty Kitchen Bins/Cardboard', offset: 0.1 },
+                    { text: 'Spot Clean: Kitchen Floor & Toilets', offset: 0.3 },
+                    { text: 'Restock Food/Deli Fridge, Muffins, Teacakes (re-check drinks/grab & go)', offset: 0.45, showFinalDrinksToggle: true }
+                ]},
+                { title: 'Final Check (Post-Close)', tasks: [
+                    { text: 'Switch off Boiler & BOH Lights (Staffroom, Stock, Office, Kitchen, Hall)', offset: 0.5 },
+                    { text: 'Daily Cleaning, Weekly Tasks, Energy & PM Temp Checks completed', offset: 0.5 },
+                    { text: 'Bins & Cardboard Taken Out', offset: 0.5 }
+                ]}
             ]
         };
 
@@ -607,37 +572,27 @@
                     const id = `${sIndex}-${tIndex}`;
                     const isDone = taskState[id]?.completed;
                     const doneTime = taskState[id]?.timestamp || '';
-                    const taskText = typeof task === 'string' ? task : task.text;
-                    let targetTime;
-                    
-                    if (task.fixedTime) targetTime = task.fixedTime;
-                    else if (section.fixedTime) targetTime = section.fixedTime;
-                    else targetTime = formatTime(task.offset !== undefined ? task.offset : (section.offset || 0));
+                    const taskText = task.text;
+                    let targetTime = task.fixedTime || section.fixedTime || formatTime(task.offset !== undefined ? task.offset : (section.offset || 0));
                     
                     let extraHtml = '';
-                    
-                    if (task.showStockToggle) extraHtml = createToggleSection('stock', 'Dry Stock Needed', 'List items needed (lids, syrups, etc.)', localStorage.getItem('audit_stock_list') || '', localStorage.getItem('audit_stock_enabled') === 'true');
-                    if (task.showMilkStockToggle) extraHtml = createToggleSection('milk-stock', 'Milk Stock List', 'List milk stock levels or needs', localStorage.getItem('audit_milk_stock_list') || '', localStorage.getItem('audit_milk_stock_enabled') === 'true');
-                    if (task.showWastageToggle) extraHtml = createToggleSection('wastage', 'Wastage List', 'List items wasted (cakes, muffins, etc.)', localStorage.getItem('audit_wastage_list') || '', localStorage.getItem('audit_wastage_enabled') === 'true');
-                    if (task.showInitialRestockToggle) extraHtml = createToggleSection('initial-restock', 'Initial Restock List', 'Large restock items (Grab & Go, Bottles, Alts)', localStorage.getItem('audit_initial_restock_list') || '', localStorage.getItem('audit_initial_restock_enabled') === 'true');
-                    if (task.showDefrostToggle) extraHtml = createToggleSection('defrost', 'Defrost List', 'List what has been taken out for defrost', localStorage.getItem('audit_defrost_list') || '', localStorage.getItem('audit_defrost_enabled') === 'true');
+                    if (task.showStockToggle) extraHtml = createToggleSection('stock', 'Dry Stock Needed', 'List items needed...', localStorage.getItem('audit_stock_list') || '', localStorage.getItem('audit_stock_enabled') === 'true');
+                    if (task.showMilkStockToggle) extraHtml = createToggleSection('milk-stock', 'Milk Stock List', 'List milk needs...', localStorage.getItem('audit_milk_stock_list') || '', localStorage.getItem('audit_milk_stock_enabled') === 'true');
+                    if (task.showWastageToggle) extraHtml = createToggleSection('wastage', 'Wastage List', 'List items wasted...', localStorage.getItem('audit_wastage_list') || '', localStorage.getItem('audit_wastage_enabled') === 'true');
+                    if (task.showInitialRestockToggle) extraHtml = createToggleSection('initial-restock', 'Initial Restock List', 'G&G, Bottles...', localStorage.getItem('audit_initial_restock_list') || '', localStorage.getItem('audit_initial_restock_enabled') === 'true');
+                    if (task.showDefrostToggle) extraHtml = createToggleSection('defrost', 'Defrost List', 'What is defrosting...', localStorage.getItem('audit_defrost_list') || '', localStorage.getItem('audit_defrost_enabled') === 'true');
                     if (task.showFridgeTripleToggle) {
-                        extraHtml = `
-                            <div class="mt-4 space-y-4">
-                                ${createToggleSection('fr-stock', 'Food Fridge Stock List', 'Items needed for food fridge', localStorage.getItem('audit_fr_stock_list') || '', localStorage.getItem('audit_fr_stock_enabled') === 'true')}
-                                ${createToggleSection('fr-milk', 'Milk Stock List', 'Milk levels/needs', localStorage.getItem('audit_fr_milk_list') || '', localStorage.getItem('audit_fr_milk_enabled') === 'true')}
-                                ${createToggleSection('fr-dry', 'Dry Stock List', 'Dry stock items needed', localStorage.getItem('audit_fr_dry_list') || '', localStorage.getItem('audit_fr_dry_enabled') === 'true')}
-                            </div>
-                        `;
+                        extraHtml = `<div class="mt-4 space-y-4">
+                            ${createToggleSection('fr-stock', 'Food Fridge Stock', 'Items needed...', localStorage.getItem('audit_fr_stock_list') || '', localStorage.getItem('audit_fr_stock_enabled') === 'true')}
+                            ${createToggleSection('fr-milk', 'Milk Stock', 'Milk levels...', localStorage.getItem('audit_fr_milk_list') || '', localStorage.getItem('audit_fr_milk_enabled') === 'true')}
+                        </div>`;
                     }
-                    if (task.showFinalDrinksToggle) extraHtml = createToggleSection('final-drinks', 'Additional Drinks/G&G', 'List extra drinks or grab & go items needed', localStorage.getItem('audit_final_drinks_list') || '', localStorage.getItem('audit_final_drinks_enabled') === 'true');
+                    if (task.showFinalDrinksToggle) extraHtml = createToggleSection('final-drinks', 'Additional Drinks/G&G', 'Extra items needed...', localStorage.getItem('audit_final_drinks_list') || '', localStorage.getItem('audit_final_drinks_enabled') === 'true');
                     
                     return `
                         <div>
                             <div onclick="toggleTask('${id}')" class="flex items-start gap-4 p-4 border border-gray-100 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                                <div class="checkbox-custom mt-0.5 ${isDone ? 'checked' : ''}">
-                                    ${isDone ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>' : ''}
-                                </div>
+                                <div class="checkbox-custom mt-0.5 ${isDone ? 'checked' : ''}">${isDone ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>' : ''}</div>
                                 <div class="flex-1 flex items-start">
                                     <p class="text-sm font-semibold ${isDone ? 'text-gray-400' : 'text-gray-800'}">${taskText}</p>
                                     ${!isDone ? `<span class="target-tag">by ${targetTime}</span>` : `<span class="timestamp-badge ml-auto">${doneTime}</span>`}
@@ -651,9 +606,6 @@
                 sectionDiv.innerHTML = `<div class="mb-3"><h3 class="text-xs font-black uppercase tracking-widest text-gray-400">${section.title}</h3></div><div class="space-y-3">${tasksHtml}</div>`;
                 container.appendChild(sectionDiv);
             });
-
-            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${viewKey}`).classList.add('active');
             updateProgress();
         }
 
@@ -664,24 +616,17 @@
             renderView(currentView);
         };
 
-        window.handleGenericToggle = (prefix) => {
-            const isChecked = document.getElementById(`${prefix}-toggle`).checked;
-            document.getElementById(`${prefix}-input-container`).classList.toggle('visible', isChecked);
-            localStorage.setItem(`audit_${prefix.replace('-','_')}_enabled`, isChecked);
+        window.handleGenericToggle = (p) => {
+            const isChecked = document.getElementById(`${p}-toggle`).checked;
+            document.getElementById(`${p}-input-container`).classList.toggle('visible', isChecked);
+            localStorage.setItem(`audit_${p.replace('-','_')}_enabled`, isChecked);
         };
-        window.saveGenericList = (prefix) => {
-            localStorage.setItem(`audit_${prefix.replace('-','_')}_list`, document.getElementById(`${prefix}-list-input`).value);
-        };
-
-        window.copySpecificList = (inputId, title) => {
-            const val = document.getElementById(inputId).value;
-            if (!val || val.trim() === "") {
-                showFeedback("List is empty");
-                return;
-            }
-            const textToCopy = `📦 ${title.toUpperCase()}:\n${val}`;
-            copyToClipboard(textToCopy);
-            showFeedback(`Copied ${title}`);
+        window.saveGenericList = (p) => localStorage.setItem(`audit_${p.replace('-','_')}_list`, document.getElementById(`${p}-list-input`).value);
+        window.copySpecificList = (i, t) => {
+            const val = document.getElementById(i).value;
+            if (!val || val.trim() === "") { showFeedback("List is empty"); return; }
+            copyToClipboard(`📦 ${t.toUpperCase()}:\n${val}`);
+            showFeedback(`Copied ${t}`);
         };
 
         function copyToClipboard(text) {
@@ -721,7 +666,12 @@
             updateProgress(); 
         };
 
-        window.switchView = (view) => renderView(view);
+        window.switchView = (view) => {
+            currentView = view;
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${view}`).classList.add('active');
+            renderView(view);
+        };
         window.saveName = () => {
             localStorage.setItem('audit_name', document.getElementById('closing-staff-name').value);
             localStorage.setItem('audit_mod_name', document.getElementById('mod-name').value);
@@ -739,21 +689,7 @@
         }
 
         window.copyFullSummary = function() {
-            const date = document.getElementById('date-display').innerText || "";
-            const name = document.getElementById('closing-staff-name').value || "";
-            const mod = document.getElementById('mod-toggle').checked ? document.getElementById('mod-name').value : "N/A";
-            const clockOutTime = document.getElementById('clockout-toggle').checked ? localStorage.getItem('audit_clockout_time') : "Pending";
-            const notes = document.getElementById('opening-notes').value || "None.";
-            
-            const summary = `📋 CLOSE HANDOVER
-Date of Shift: ${date}
-Staff: ${name}
-MOD: ${mod}
-Clocked Out: ${clockOutTime}
-
-Notes for Open:
-${notes}`;
-            
+            const summary = `📋 CLOSE HANDOVER\nDate: ${document.getElementById('date-display').innerText}\nStaff: ${document.getElementById('closing-staff-name').value}\nMOD: ${document.getElementById('mod-toggle').checked ? document.getElementById('mod-name').value : "N/A"}\nClocked Out: ${localStorage.getItem('audit_clockout_time') || "Pending"}\n\nNotes:\n${document.getElementById('opening-notes').value || "None."}`;
             copyToClipboard(summary);
             showFeedback("Summary Copied");
         };
@@ -770,11 +706,9 @@ ${notes}`;
             const modEnabled = localStorage.getItem('audit_mod_enabled') === 'true';
             document.getElementById('mod-toggle').checked = modEnabled;
             if (modEnabled) document.getElementById('mod-input-container').classList.add('visible');
-            const clockEnabled = localStorage.getItem('audit_clockout_enabled') === 'true';
-            document.getElementById('clockout-toggle').checked = clockEnabled;
-            if (clockEnabled) {
-                const time = localStorage.getItem('audit_clockout_time');
-                document.getElementById('clockout-time-badge').innerText = time;
+            if (localStorage.getItem('audit_clockout_enabled') === 'true') {
+                document.getElementById('clockout-toggle').checked = true;
+                document.getElementById('clockout-time-badge').innerText = localStorage.getItem('audit_clockout_time');
                 document.getElementById('clockout-time-badge').classList.remove('hidden');
             }
             currentShift = localStorage.getItem('audit_shift') || 'weekday';
@@ -783,3 +717,4 @@ ${notes}`;
     </script>
 </body>
 </html>
+
