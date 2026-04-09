@@ -270,6 +270,7 @@
                         <label class="input-label">Closing Staff:</label>
                         <input type="text" id="closing-staff-name" oninput="saveName()" placeholder="Staff Names/Initials" class="audit-input font-medium">
                     </div>
+                    
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">MOD</span>
@@ -281,6 +282,17 @@
                     </div>
                     <div id="mod-input-container">
                         <input type="text" id="mod-name" oninput="saveName()" placeholder="MOD Name/Initials" class="audit-input font-medium">
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">STAFF CLOCKED OUT</span>
+                            <span id="clockout-time-badge" class="timestamp-badge w-fit hidden"></span>
+                        </div>
+                        <label class="toggle-container">
+                            <input type="checkbox" id="clockout-toggle" onchange="handleClockoutToggle()" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                        </label>
                     </div>
                 </div>
                 <div>
@@ -317,42 +329,62 @@
         const ALL_CLOSING_TASKS = {
             'bar': [
                 { 
-                    title: 'Side 3 Clean-down<br>(3-4.30pm)', 
+                    title: 'Side 3 Clean-down (3-4.30pm)', 
                     fixedTime: '4:30pm',
                     tasks: [
-                        'Take off Side 3 (Pulycaf Group Heads/Handles, Clean Drip Tray & Steam Wand, Clean & Empty Grounds Bin, Wipe Down Machine)',
-                        'Wash Side 3 Tools (Milk Jugs, Shot Glasses, Probes)',
-                        'Wipe Down Bench Space & Fridge Front',
-                        'Clean & Neaten Side 2 Bench Space'
+                        'Clean & Wipe Down Coffee Machine (Pulycaf Group Heads/Handles), Clean Drip Tray & Steam Wands, Empty/Clean Grounds Bin.',
+                        'Wash Side 3 Tools (Jugs/Shots/Probes) & Clean Bench, Fridges and Side 2 space'
                     ] 
                 },
                 { 
-                    title: 'Closing-Prep<br>(2-3hr to close)', 
+                    title: 'Closing-Prep (2-3hr to close)', 
                     tasks: [
-                        { text: 'Empty, Clean & Bag Grounds Bin', offset: -3 },
-                        { text: 'Wipe down all Fridges', offset: -2.75 },
-                        { text: 'Clean Microwave & Cool 1st Oven', offset: -2.5 },
-                        { text: 'Alt Milk/Base & Dry Stock List', offset: -2.25 },
-                        { text: 'Take off 1st handle', offset: -2 }
+                        { text: 'Clean & Bag Grounds Bin, Wipe all Fridges & Clean Microwave', offset: -2.75 },
+                        { text: 'Cool 1st Oven & Take off 1st Coffee Handle', offset: -2.25 },
+                        { text: 'Alt Milk/Dry Stock List & Gather Tools for Cleaning (Neaten Side 1)', offset: -1.75 }
                     ] 
                 },
                 { 
                     title: 'Staggered Bar Clean & Restock (1hr to close)', 
                     tasks: [
-                        { text: 'Neaten Side 1 & Sweep Floor', offset: -1 },
-                        { text: '2nd handle off', offset: -0.85 },
-                        { text: 'Clean Food/Blender Area', offset: -0.75 },
-                        { text: 'Refill Bar Dry Stock (Lids, Cups, Sleeves, Straws, Napkins, Teabags, powder/decaf, syrups)', offset: -0.5 }
+                        { text: '2nd handle off, Sweep Bar Floor & Clean Food/Blender Area', offset: -0.8 },
+                        { text: 'Restock: Dry Stock (Lids, Cups, Syrups etc), Matcha, Cream, Milks & Bases', offset: -0.6 }
                     ] 
                 },
-                { title: 'Stage 4: Shutdown & Floor Prep (At Close)', offset: 0, tasks: ['Waste Pastries', 'Cool 2nd Oven', 'Last handle off', 'Final Machine Wipe', 'Set Jugs for morning', 'Turn off Coffee/Blenders', 'Mop Floor & Tiles'] },
-                { title: 'Stage 5: Final Check & Tills (Post-Close)', offset: 0.5, tasks: ['Final Bar Check', 'Staff Refreshments Tally', 'Close Tills'] }
+                { 
+                    title: 'Bar Close Down (30min to close)', 
+                    tasks: [
+                        { text: 'Wash & set aside Probes & Shot glasses', offset: -0.5 },
+                        { text: '3rd handle off, Cool 2nd Oven & Spot Clean Bar/Side 1', offset: -0.3 },
+                        { text: 'Final Handle off, Clean Drip Tray/Steam Wands & Machine Wipe', offset: -0.05 }
+                    ] 
+                },
+                { 
+                    title: 'Last Bar Close Tasks (At Close)', 
+                    tasks: [
+                        { text: 'Empty/Change Bar & Floor Bins (Fresh Bag in Grounds Bin)', offset: 0 },
+                        { text: 'Process Wastage & Reset Bar Tools for Open', offset: 0.15 },
+                        { text: 'Mop Bar Floor & Floor Tiles (additional spot clean if needed)', offset: 0.333 }
+                    ] 
+                },
+                { 
+                    title: 'Final Checks (Post-Close)', 
+                    tasks: [
+                        { text: 'Check Bar Milk Fridge for OOD Waste', offset: 0.5 },
+                        { text: 'Coffee Machines, Grinders & Blenders Switched Off', offset: 0.5 },
+                        { text: 'Fridge Lights & Bar/FOH lights off', offset: 0.5 },
+                        { text: 'Bins/Cardboard Taken Out', offset: 0.5 }
+                    ] 
+                }
             ],
             'floor_boh': [
                 { 
                     title: 'Pre Close Prep (3-4:30pm)', 
                     fixedTime: '4:30pm',
-                    tasks: ['Top Up Grab and Go', 'Top Up Bottle Drinks', 'Top Up Alt Milks', 'Defrost Cakes/Muffins/Teacakes/Deli'] 
+                    tasks: [
+                        'Top Up/Restock: Grab & Go, Bottled Drinks, and Alt Milks',
+                        'Defrost Cakes/Muffins/Teacakes/Deli for next day'
+                    ] 
                 },
                 { 
                     title: 'Toilets & Balcony Cleaning (2-3hr to Close)', 
@@ -371,36 +403,28 @@
                 {
                     title: 'Final Closing Prep (30min to close)',
                     tasks: [
-                        { text: 'Clear Floor & Tables (last dishes, trays etc)', offset: -0.5 },
-                        { text: 'Wash Last Dishes', offset: -0.25 },
-                        { text: 'Switch off & Clean Dishwash (drain, rinse, re-salt, clean cycle, wipe down unit & sink)', offset: -0.16 },
-                        { text: 'Return Bar Tools & Dishes', offset: -0.1 },
-                        { text: 'Check Food Fridge for OOD Waste', offset: -0.1 },
-                        { text: 'Gather Milk/Alts & Dry Stock Restock', offset: -0.05 }
+                        { text: 'Clear Floor & Tables + Wash Last Dishes', offset: -0.4 },
+                        { text: 'Switch off & Clean Dishwash (drain, rinse, re-salt, clean cycle, wipe unit/sink)', offset: -0.16 },
+                        { text: 'Return all Bar Tools & Dishes to stations', offset: -0.1 },
+                        { text: 'Check Food Fridge for OOD Waste + Gather Milk/Restock items', offset: -0.05 },
+                        { text: 'Bring Cakes/Defrost items to Front', offset: -0.05 }
                     ]
                 },
                 {
                     title: 'Lockup & Spot Cleaning (At Close)',
                     tasks: [
-                        { text: 'Lock Shutters', offset: 0 },
-                        { text: 'Sweep Floor/FOH', offset: 0.02 },
-                        { text: 'Tills in Safe', offset: 0.1 },
-                        { text: 'Empty Kitchen Bins & Cardboard', offset: 0.15 },
-                        { text: 'Spot Sweep/Mop Kitchen Floor if needed', offset: 0.2 },
-                        { text: 'Spot Clean Toilets if needed', offset: 0.3 },
+                        { text: 'Lock Shutters & Put Tills in Safe', offset: 0 },
+                        { text: 'Sweep Floor/FOH & Empty Kitchen Bins/Cardboard', offset: 0.1 },
+                        { text: 'Spot Clean: Kitchen Floor & Toilets', offset: 0.3 },
                         { text: 'Restock Food/Deli Fridge, Muffins, Teacakes (re-check drinks/grab & go)', offset: 0.45 }
                     ]
                 },
                 {
                     title: 'Final Check (Post-Close)',
                     tasks: [
-                        { text: 'Switch off Boiler & BOH Lights (Staffroom, Stock Cupboard, Office, Kitchen, Hallway)', offset: 0.5 },
-                        { text: 'PM Temp Checks completed', offset: 0.5 },
-                        { text: 'Daily Cleaning Checklist completed', offset: 0.5 },
-                        { text: 'Weekly Cleaning Tasks completed', offset: 0.5 },
-                        { text: 'Energy Consumption Checklist completed', offset: 0.5 },
-                        { text: 'Bins & Cardboard Taken Out', offset: 0.5 },
-                        { text: 'All Staff Clocked Out', offset: 0.5 }
+                        { text: 'Switch off Boiler & BOH Lights (Staffroom, Stock, Office, Kitchen, Hall)', offset: 0.5 },
+                        { text: 'Daily Cleaning, Weekly Tasks, Energy & PM Temp Checks completed', offset: 0.5 },
+                        { text: 'Bins & Cardboard Taken Out', offset: 0.5 }
                     ]
                 }
             ]
@@ -428,7 +452,7 @@
             const totalTargetMinutes = (config.closeTime * 60) + (offset * 60);
             
             const hours = Math.floor(totalTargetMinutes / 60) % 24;
-            const mins = Math.floor(totalTargetMinutes % 60);
+            const mins = Math.round(totalTargetMinutes % 60);
             
             const hDisplay = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
             const ampm = hours >= 12 ? 'pm' : 'am';
@@ -484,42 +508,61 @@
         };
 
         window.switchView = (view) => renderView(view);
+        
         window.saveName = () => {
             localStorage.setItem('audit_name', document.getElementById('closing-staff-name').value);
             localStorage.setItem('audit_mod_name', document.getElementById('mod-name').value);
         };
+
         window.saveNotes = () => localStorage.setItem('audit_notes', document.getElementById('opening-notes').value);
+
         window.handleModToggle = () => {
             const isChecked = document.getElementById('mod-toggle').checked;
             document.getElementById('mod-input-container').classList.toggle('visible', isChecked);
             localStorage.setItem('audit_mod_enabled', isChecked);
         };
+
+        window.handleClockoutToggle = () => {
+            const isChecked = document.getElementById('clockout-toggle').checked;
+            const badge = document.getElementById('clockout-time-badge');
+            
+            if (isChecked) {
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem('audit_clockout_time', time);
+                badge.innerText = time;
+                badge.classList.remove('hidden');
+            } else {
+                localStorage.removeItem('audit_clockout_time');
+                badge.classList.add('hidden');
+            }
+            localStorage.setItem('audit_clockout_enabled', isChecked);
+            updateProgress(); 
+        };
         
         function updateProgress() {
             const tasks = ALL_CLOSING_TASKS[currentView].flatMap((s, sIndex) => s.tasks.map((_, tIndex) => `${sIndex}-${tIndex}`));
-            const completed = tasks.filter(t => taskState[t]?.completed).length;
-            document.getElementById('progress-text').innerText = `${completed} / ${tasks.length} Tasks Done`;
-            document.getElementById('percentage-text').innerText = `${Math.round((completed / tasks.length) * 100)}%`;
+            const completedCount = tasks.filter(t => taskState[t]?.completed).length;
+            
+            const isClockedOut = document.getElementById('clockout-toggle').checked;
+            const totalTasks = tasks.length + 1;
+            const finalCompleted = completedCount + (isClockedOut ? 1 : 0);
+
+            document.getElementById('progress-text').innerText = `${finalCompleted} / ${totalTasks} Tasks Done`;
+            document.getElementById('percentage-text').innerText = `${Math.round((finalCompleted / totalTasks) * 100)}%`;
         }
 
         window.copyNotes = function() {
             const date = document.getElementById('date-display').innerText || "";
             const name = document.getElementById('closing-staff-name').value || "";
-            const mod = document.getElementById('mod-toggle').checked ? document.getElementById('mod-name').value : "";
+            const mod = document.getElementById('mod-toggle').checked ? document.getElementById('mod-name').value : "N/A";
+            const clockOutTime = document.getElementById('clockout-toggle').checked ? localStorage.getItem('audit_clockout_time') : "Pending";
             const notes = document.getElementById('opening-notes').value || "None.";
-            
-            let clockedOutTime = "Pending";
-            const floorBohState = JSON.parse(localStorage.getItem('audit_state_floor_boh') || '{}');
-            const clockOutTaskId = "5-6"; 
-            if (floorBohState[clockOutTaskId] && floorBohState[clockOutTaskId].completed) {
-                clockedOutTime = floorBohState[clockOutTaskId].timestamp;
-            }
             
             const summary = `📋 CLOSE HANDOVER
 Date of Shift: ${date}
 Staff: ${name}
 MOD: ${mod}
-Clocked Out: ${clockedOutTime}
+Clocked Out: ${clockOutTime}
 
 Notes for Open:
 ${notes}`;
@@ -541,9 +584,23 @@ ${notes}`;
 
         window.onload = () => {
             updateDateTime();
+            
             document.getElementById('closing-staff-name').value = localStorage.getItem('audit_name') || '';
             document.getElementById('mod-name').value = localStorage.getItem('audit_mod_name') || '';
             document.getElementById('opening-notes').value = localStorage.getItem('audit_notes') || '';
+            
+            const modEnabled = localStorage.getItem('audit_mod_enabled') === 'true';
+            document.getElementById('mod-toggle').checked = modEnabled;
+            if (modEnabled) document.getElementById('mod-input-container').classList.add('visible');
+            
+            const clockEnabled = localStorage.getItem('audit_clockout_enabled') === 'true';
+            document.getElementById('clockout-toggle').checked = clockEnabled;
+            if (clockEnabled) {
+                const time = localStorage.getItem('audit_clockout_time');
+                document.getElementById('clockout-time-badge').innerText = time;
+                document.getElementById('clockout-time-badge').classList.remove('hidden');
+            }
+
             currentShift = localStorage.getItem('audit_shift') || 'weekday';
             setShift(currentShift);
         };
