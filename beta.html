@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1A1C21">
+    
+    <!-- PWA Primary Trigger: Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Closing Checklist">
+    
+    <!-- iOS Specific Meta Tags -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0iIzFBMUMyMSIvPjxwYXRoIGQ9Ik0zNjAgMTYwSDE1MmMtMTEgMC0yMCA5LTIwIDIwdjE3MmMwIDExIDkgMjAgMjAgMjBoMjA4YzExIDAgMjAtOSAyMC0yMFYxODBjMC0xMS05LTIwLTIwLTIwem0tMjAgMTg0SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2em0wLTQ4SDE3MnYtMTZoMTY4djE2eiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjU2IDgwaC00MHY0MGg4MFY4MGgtNDB6IiBmaWxsPSIjMjJDNTVFIi8+PC9zdmc+">
+    
+    <title>CN Metro: Closing Checklists</title>
+    
+    <!-- PWA Manifest Generated via Data URI for Instant Availability -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkNsb3NpbmcgQ2hlY2tsaXN0IiwKICAic2hvcnRfbmFtZSI6ICJDbG9zZUNoZWNrIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGOEY5RkEiLAogICJ0aGVtZV9jb2xvciI6ICIjMUExQzIxIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvOTI0LzkyNDUxNC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --audit-bg: #F8F9FA;
+            --audit-text-main: #1A1C21;
+            --audit-text-muted: #6B7280;
+            --audit-border: #E5E7EB;
+            --audit-accent-green: #22C55E;
+            --audit-input-bg: #F9FAFB;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--audit-bg);
+            color: var(--audit-text-main);
+            min-height: 100vh;
+            padding-bottom: 3rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .main-container {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--audit-border);
+            position: relative;
+        }
+
+        .audit-title {
+            font-weight: 800;
+            font-size: 2.25rem;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .input-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--audit-text-main);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .audit-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background-color: var(--audit-input-bg);
+            border: 1px solid var(--audit-border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            color: var(--audit-text-main);
+            transition: border-color 0.2s;
+        }
+
+        .audit-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .score-box {
+            background-color: #F9FAFB;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--audit-border);
+        }
+
+        .tab-button {
+            font-weight: 600;
+            color: var(--audit-text-muted);
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            color: var(--audit-accent-green);
+            border-bottom-color: var(--audit-accent-green);
+        }
+
+        .checkbox-custom {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid var(--audit-border);
+            border-radius: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .checkbox-custom.checked {
+            background-color: var(--audit-text-main);
+            border-color: var(--audit-text-main);
+        }
+
+        .btn-clear {
+            border: 1px solid var(--audit-border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--audit-text-main);
+        }
+
+        .btn-primary {
+            background-color: var(--audit-text-main);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-mini-copy {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #3B82F6;
+            background: #EFF6FF;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all 0.2s;
+        }
+
+        .btn-mini-copy:active {
+            transform: scale(0.95);
+            background: #DBEAFE;
+        }
+
+        .timestamp-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--audit-text-muted);
+            background: #F3F4F6;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+
+        .shift-pill {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            border: 1px solid var(--audit-border);
+            color: var(--audit-text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .shift-pill.active {
+            background-color: var(--audit-text-main);
+            color: white;
+            border-color: var(--audit-text-main);
+        }
+
+        .target-tag {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--audit-accent-green);
+            background: #F0FDF4;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .toggle-container {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E5E7EB;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .toggle-input:checked + .toggle-slider {
+            background-color: var(--audit-accent-green);
+        }
+
+        .toggle-input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .expandable-container {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .expandable-container.visible {
+            max-height: 600px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+
+        #pwa-download-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            display: none;
+            background: #F3F4F6;
+            padding: 0.6rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--audit-border);
+            z-index: 10;
+        }
+
+        #pwa-download-btn:active {
+            transform: scale(0.9);
+            background: #E5E7EB;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto main-container p-6 md:p-10">
+        <div id="pwa-download-btn" title="Install App">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+
+        <header class="mb-8">
+            <h1 class="audit-title">Closing Checklists &<br>Handover</h1>
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="renderView(currentView)" class="text-emerald-500 font-bold text-sm">New Session.</button>
+                <button onclick="showClearConfirmation()" class="btn-clear">Clear All</button>
+            </div>
+        </header>
+
+        <div class="flex gap-8 border-b border-gray-100 mb-8">
+            <button id="tab-bar" onclick="switchView('bar')" class="tab-button active">Bar Close</button>
+            <button id="tab-floor_boh" onclick="switchView('floor_boh')" class="tab-button">Floor/BOH Close</button>
+        </div>
+
+        <div class="score-box mb-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🎯</span>
+                <div>
+                    <p class="text-[0.7rem] font-bold text-gray-500 uppercase tracking-tight">Status Tracker</p>
+                    <p id="progress-text" class="font-bold text-sm text-gray-800">0 / 0 Tasks Done</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Completion</p>
+                <p id="percentage-text" class="text-3xl font-extrabold text-black">0%</p>
+            </div>
+        </div>
+
+        <div class="mb-8 space-y-2">
+            <div class="flex items-center justify-between px-1">
+                <p class="text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest">Closing Type</p>
+            </div>
+            <div class="flex gap-2">
+                <div id="shift-weekday" onclick="setShift('weekday')" class="shift-pill active">Weekday (9pm)</div>
+                <div id="shift-saturday" onclick="setShift('saturday')" class="shift-pill">Saturday (8pm)</div>
+                <div id="shift-sunday" onclick="setShift('sunday')" class="shift-pill">Sunday (6pm)</div>
+            </div>
+        </div>
+
+        <div id="checklist-container" class="space-y-6 mb-12"></div>
+
+        <div class="space-y-8 pt-8 border-t border-gray-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="input-label">Closing Staff:</label>
+                        <input type="text" id="closing-staff-name" oninput="saveName()" placeholder="Staff Names/Initials" class="audit-input font-medium">
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">MOD</span>
+                        </div>
+                        <label class="toggle-container">
+                            <input type="checkbox" id="mod-toggle" onchange="handleModToggle()" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="mod-input-container" class="expandable-container">
+                        <input type="text" id="mod-name" oninput="saveName()" placeholder="MOD Name/Initials" class="audit-input font-medium">
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">STAFF CLOCKED OUT</span>
+                            <span id="clockout-time-badge" class="timestamp-badge w-fit hidden"></span>
+                        </div>
+                        <label class="toggle-container">
+                            <input type="checkbox" id="clockout-toggle" onchange="handleClockoutToggle()" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="input-label">Date of Shift:</label>
+                    <div id="date-display" class="audit-input flex items-center bg-gray-50 text-gray-500"></div>
+                </div>
+            </div>
+            <div>
+                <label class="input-label">Handover Notes:</label>
+                <textarea id="opening-notes" oninput="saveNotes()" placeholder="notes for opening staff" class="audit-input min-h-[150px]"></textarea>
+            </div>
+            <button onclick="copyFullSummary()" class="btn-primary">Copy Handover Summary</button>
+            <p id="copy-feedback" class="text-center text-xs font-bold text-emerald-600 h-4 uppercase mt-2"></p>
+        </div>
+    </div>
+
+    <div id="clearModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 max-sm w-full rounded-2xl shadow-2xl">
+            <h3 class="text-xl font-extrabold mb-2">Clear everything?</h3>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeModal()" class="flex-1 py-3 font-bold text-gray-400">Cancel</button>
+                <button onclick="clearCurrentTasks()" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Logic -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                const swCode = `
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(clients.claim());
+                    });
+                    self.addEventListener('fetch', (event) => {
+                        event.respondWith(
+                            fetch(event.request).catch(() => {
+                                return caches.match(event.request);
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('ServiceWorker registered');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Handle the Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwa-download-btn');
+            if(installBtn) installBtn.style.display = 'block';
+        });
+
+        document.getElementById('pwa-download-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwa-download-btn').style.display = 'none';
+                }
+                deferredPrompt = null;
+            } else {
+                showFeedback("Use browser menu to install");
+            }
+        });
+    </script>
+
+    <script>
+        const SHIFT_CONFIG = {
+            'weekday': { closeTime: 21, label: 'Weekday (9pm)' },
+            'saturday': { closeTime: 20, label: 'Saturday (8pm)' },
+            'sunday': { closeTime: 18, label: 'Sunday (6pm)' }
+        };
+
+        const ALL_CLOSING_TASKS = {
+            'bar': [
+                { title: 'Staggered Side 3 Clean-down (4-4.30pm)', tasks: [
+                    { text: 'Clean & Wipe Down Coffee Machine (Pulycaf Group Heads/Handles), Clean Drip Tray & Steam Wands, Empty/Clean Grounds Bin.', fixedTime: '4:00pm' },
+                    { text: 'Wash Side 3 Tools (Jugs/Shots/Probes) & Clean Bench, Fridges and Side 2 space', fixedTime: '4:30pm' }
+                ]},
+                { title: 'Closing-Prep (2-3hr to close)', tasks: [
+                    { text: 'Clean & Bag Grounds Bin, Wipe all Fridges & Clean Microwave', offset: -2.75 },
+                    { text: 'Cool 1st Oven & Take off 1st Coffee Handle', offset: -2.25 },
+                    { text: 'Alt Milk/Dry Stock List & Gather Tools for Cleaning (Neaten Side 1)', offset: -1.75, showStockToggle: true }
+                ]},
+                { title: 'Staggered Bar Clean & Restock (1hr to close)', tasks: [
+                    { text: '2nd handle off, Sweep Bar Floor & Clean Food/Blender Area', offset: -1.0 },
+                    { text: 'Restock: Dry Stock (Lids, Cups, Syrups etc), Matcha, Cream & Bases', offset: -0.7 },
+                    { text: 'Check Bar Milk Fridge for OOD Waste & Restock Milks', offset: -0.583, showMilkStockToggle: true }
+                ]},
+                { title: 'Bar Close Down (30min to close)', tasks: [
+                    { text: 'Final Dishwash Load: Send all large tools to BOH. Hand-wash Probes & Shot glasses at Bar Sink.', offset: -0.5 },
+                    { text: '3rd handle off, Cool 2nd Oven & Spot Clean Bar/Side 1', offset: -0.3 },
+                    { text: 'Final Handle off, Clean Drip Tray/Steam Wands & Machine Wipe', offset: -0.05 }
+                ]},
+                { title: 'Last Bar Close Tasks (At Close)', tasks: [
+                    { text: 'Empty/Change Bar & Floor Bins (Fresh Bag in Grounds Bin)', offset: 0 },
+                    { text: 'Process Wastage & Reset Bar Tools for Open', offset: 0.15, showWastageToggle: true },
+                    { text: 'Mop Bar Floor & Floor Tiles (additional spot clean if needed)', offset: 0.333 }
+                ]},
+                { title: 'Final Checks (Post-Close)', tasks: [
+                    { text: 'Coffee Machines, Grinders & Blenders Switched Off', offset: 0.5 },
+                    { text: 'Fridge Lights & Bar/FOH lights off', offset: 0.5 },
+                    { text: 'Bins/Cardboard Taken Out', offset: 0.5 }
+                ]}
+            ],
+            'floor_boh': [
+                { title: 'Pre Close Prep (3-4:30pm)', fixedTime: '4:30pm', tasks: [
+                    { text: 'Top Up/Restock: Grab & Go, Bottled Drinks, and Alt Milks', showInitialRestockToggle: true },
+                    { text: 'Defrost Cakes/Muffins/Teacakes/Deli for next day', showDefrostToggle: true }
+                ]},
+                { title: 'Toilets & Balcony Cleaning (2-3hr to Close)', tasks: [
+                    { text: 'Clean & Mop Toilets (Mirror, Sinks, Dryer, Babychange, Bins)', offset: -3 },
+                    { text: 'Clear Balcony (Clear, Sweep, Clean & Empty/Change Bin)', offset: -2 }
+                ]},
+                { title: 'Kitchen & Bar Tools Cleaning (Staggered)', tasks: [
+                    { text: 'Clean Kitchen Surfaces & Sweep/Mop Floor', offset: -1 },
+                    { text: 'Clean/Wash Bar Tools & Load Trolley', offset: -0.666 }
+                ]},
+                { title: 'Final Closing Prep (30min to close)', tasks: [
+                    { text: 'Clear Floor & Tables + Wash Last Dishes', offset: -0.4 },
+                    { text: 'Confirm Bar is finished with machine; then Switch off & Clean Dishwash (drain, rinse, re-salt, clean cycle, wipe unit/sink)', offset: -0.16 },
+                    { text: 'Return all Bar Tools & Dishes to stations', offset: -0.1 },
+                    { text: 'Check Food Fridge for OOD Waste + Gather Milk/Restock items', offset: -0.05, showFridgeTripleToggle: true },
+                    { text: 'Bring Cakes/Defrost items to Front', offset: -0.05 }
+                ]},
+                { title: 'Lockup & Spot Cleaning (At Close)', tasks: [
+                    { text: 'Lock Shutters & Put Tills in Safe', offset: 0 },
+                    { text: 'Sweep Floor/FOH & Empty Kitchen Bins/Cardboard', offset: 0.1 },
+                    { text: 'Spot Clean: Kitchen Floor & Toilets', offset: 0.3 },
+                    { text: 'Restock Food/Deli Fridge, Muffins, Teacakes (re-check drinks/grab & go)', offset: 0.45, showFinalDrinksToggle: true }
+                ]},
+                { title: 'Final Check (Post-Close)', tasks: [
+                    { text: 'Switch off Boiler & BOH Lights (Staffroom, Stock, Office, Kitchen, Hall)', offset: 0.5 },
+                    { text: 'Daily Cleaning, Weekly Tasks, Energy & PM Temp Checks completed', offset: 0.5 },
+                    { text: 'Bins & Cardboard Taken Out', offset: 0.5 }
+                ]}
+            ]
+        };
+
+        let taskState = {};
+        let currentView = 'bar';
+        let currentShift = 'weekday';
+
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('date-display').innerText = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function setShift(shiftKey) {
+            currentShift = shiftKey;
+            localStorage.setItem('audit_shift', shiftKey);
+            document.querySelectorAll('.shift-pill').forEach(pill => pill.classList.remove('active'));
+            document.getElementById(`shift-${shiftKey}`).classList.add('active');
+            renderView(currentView);
+        }
+
+        function formatTime(offset) {
+            const config = SHIFT_CONFIG[currentShift];
+            const totalTargetMinutes = (config.closeTime * 60) + (offset * 60);
+            const hours = Math.floor(totalTargetMinutes / 60) % 24;
+            const mins = Math.round(totalTargetMinutes % 60);
+            const hDisplay = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+            const ampm = hours >= 12 ? 'pm' : 'am';
+            return `${hDisplay}${mins === 0 ? '' : ':' + mins.toString().padStart(2, '0')}${ampm}`;
+        }
+
+        function createToggleSection(idPrefix, title, placeholder, initialValue, isEnabled) {
+            return `
+                <div class="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest">${title}</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="copySpecificList('${idPrefix}-list-input', '${title}')" class="btn-mini-copy">Copy List</button>
+                            <label class="toggle-container">
+                                <input type="checkbox" id="${idPrefix}-toggle" onchange="handleGenericToggle('${idPrefix}')" class="toggle-input" ${isEnabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="${idPrefix}-input-container" class="expandable-container ${isEnabled ? 'visible' : ''}">
+                        <textarea id="${idPrefix}-list-input" oninput="saveGenericList('${idPrefix}')" placeholder="${placeholder}" class="audit-input min-h-[120px] bg-white">${initialValue}</textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderView(viewKey) {
+            currentView = viewKey;
+            taskState = JSON.parse(localStorage.getItem('audit_state_' + currentView) || '{}');
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+
+            ALL_CLOSING_TASKS[viewKey].forEach((section, sIndex) => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'space-y-4';
+                
+                let tasksHtml = section.tasks.map((task, tIndex) => {
+                    const id = `${sIndex}-${tIndex}`;
+                    const isDone = taskState[id]?.completed;
+                    const doneTime = taskState[id]?.timestamp || '';
+                    const taskText = task.text;
+                    let targetTime = task.fixedTime || section.fixedTime || formatTime(task.offset !== undefined ? task.offset : (section.offset || 0));
+                    
+                    let extraHtml = '';
+                    if (task.showStockToggle) extraHtml = createToggleSection('stock', 'Dry Stock Needed', 'List items needed...', localStorage.getItem('audit_stock_list') || '', localStorage.getItem('audit_stock_enabled') === 'true');
+                    if (task.showMilkStockToggle) extraHtml = createToggleSection('milk-stock', 'Milk Stock List', 'List milk needs...', localStorage.getItem('audit_milk_stock_list') || '', localStorage.getItem('audit_milk_stock_enabled') === 'true');
+                    if (task.showWastageToggle) extraHtml = createToggleSection('wastage', 'Wastage List', 'List items wasted...', localStorage.getItem('audit_wastage_list') || '', localStorage.getItem('audit_wastage_enabled') === 'true');
+                    if (task.showInitialRestockToggle) extraHtml = createToggleSection('initial-restock', 'Initial Restock List', 'G&G, Bottles...', localStorage.getItem('audit_initial_restock_list') || '', localStorage.getItem('audit_initial_restock_enabled') === 'true');
+                    if (task.showDefrostToggle) extraHtml = createToggleSection('defrost', 'Defrost List', 'What is defrosting...', localStorage.getItem('audit_defrost_list') || '', localStorage.getItem('audit_defrost_enabled') === 'true');
+                    if (task.showFridgeTripleToggle) {
+                        extraHtml = `<div class="mt-4 space-y-4">
+                            ${createToggleSection('fr-stock', 'Food Fridge Stock', 'Items needed...', localStorage.getItem('audit_fr_stock_list') || '', localStorage.getItem('audit_fr_stock_enabled') === 'true')}
+                            ${createToggleSection('fr-milk', 'Milk Stock', 'Milk levels...', localStorage.getItem('audit_fr_milk_list') || '', localStorage.getItem('audit_fr_milk_enabled') === 'true')}
+                        </div>`;
+                    }
+                    if (task.showFinalDrinksToggle) extraHtml = createToggleSection('final-drinks', 'Additional Drinks/G&G', 'Extra items needed...', localStorage.getItem('audit_final_drinks_list') || '', localStorage.getItem('audit_final_drinks_enabled') === 'true');
+                    
+                    return `
+                        <div>
+                            <div onclick="toggleTask('${id}')" class="flex items-start gap-4 p-4 border border-gray-100 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="checkbox-custom mt-0.5 ${isDone ? 'checked' : ''}">${isDone ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>' : ''}</div>
+                                <div class="flex-1 flex items-start">
+                                    <p class="text-sm font-semibold ${isDone ? 'text-gray-400' : 'text-gray-800'}">${taskText}</p>
+                                    ${!isDone ? `<span class="target-tag">by ${targetTime}</span>` : `<span class="timestamp-badge ml-auto">${doneTime}</span>`}
+                                </div>
+                            </div>
+                            ${extraHtml}
+                        </div>
+                    `;
+                }).join('');
+
+                sectionDiv.innerHTML = `<div class="mb-3"><h3 class="text-xs font-black uppercase tracking-widest text-gray-400">${section.title}</h3></div><div class="space-y-3">${tasksHtml}</div>`;
+                container.appendChild(sectionDiv);
+            });
+            updateProgress();
+        }
+
+        window.toggleTask = function(id) {
+            if (taskState[id]?.completed) delete taskState[id];
+            else taskState[id] = { completed: true, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+            localStorage.setItem('audit_state_' + currentView, JSON.stringify(taskState));
+            renderView(currentView);
+        };
+
+        window.handleGenericToggle = (p) => {
+            const isChecked = document.getElementById(`${p}-toggle`).checked;
+            document.getElementById(`${p}-input-container`).classList.toggle('visible', isChecked);
+            localStorage.setItem(`audit_${p.replace('-','_')}_enabled`, isChecked);
+        };
+        window.saveGenericList = (p) => localStorage.setItem(`audit_${p.replace('-','_')}_list`, document.getElementById(`${p}-list-input`).value);
+        window.copySpecificList = (i, t) => {
+            const val = document.getElementById(i).value;
+            if (!val || val.trim() === "") { showFeedback("List is empty"); return; }
+            copyToClipboard(`📦 ${t.toUpperCase()}:\n${val}`);
+            showFeedback(`Copied ${t}`);
+        };
+
+        function copyToClipboard(text) {
+            const area = document.createElement('textarea');
+            area.value = text;
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand('copy');
+            document.body.removeChild(area);
+        }
+
+        function showFeedback(msg) {
+            const feedback = document.getElementById('copy-feedback');
+            if(feedback) {
+                feedback.innerText = msg.toUpperCase();
+                setTimeout(() => feedback.innerText = "", 2000);
+            }
+        }
+
+        window.handleModToggle = () => {
+            const isChecked = document.getElementById('mod-toggle').checked;
+            document.getElementById('mod-input-container').classList.toggle('visible', isChecked);
+            localStorage.setItem('audit_mod_enabled', isChecked);
+        };
+
+        window.handleClockoutToggle = () => {
+            const isChecked = document.getElementById('clockout-toggle').checked;
+            const badge = document.getElementById('clockout-time-badge');
+            if (isChecked) {
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem('audit_clockout_time', time);
+                badge.innerText = time;
+                badge.classList.remove('hidden');
+            } else {
+                localStorage.removeItem('audit_clockout_time');
+                badge.classList.add('hidden');
+            }
+            localStorage.setItem('audit_clockout_enabled', isChecked);
+            updateProgress(); 
+        };
+
+        window.switchView = (view) => {
+            currentView = view;
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${view}`).classList.add('active');
+            renderView(view);
+        };
+        window.saveName = () => {
+            localStorage.setItem('audit_name', document.getElementById('closing-staff-name').value);
+            localStorage.setItem('audit_mod_name', document.getElementById('mod-name').value);
+        };
+        window.saveNotes = () => localStorage.setItem('audit_notes', document.getElementById('opening-notes').value);
+
+        function updateProgress() {
+            const tasks = ALL_CLOSING_TASKS[currentView].flatMap((s, sIndex) => s.tasks.map((_, tIndex) => `${sIndex}-${tIndex}`));
+            const completedCount = tasks.filter(t => taskState[t]?.completed).length;
+            const isClockedOut = document.getElementById('clockout-toggle').checked;
+            const totalTasks = tasks.length + 1;
+            const finalCompleted = completedCount + (isClockedOut ? 1 : 0);
+            document.getElementById('progress-text').innerText = `${finalCompleted} / ${totalTasks} Tasks Done`;
+            document.getElementById('percentage-text').innerText = `${Math.round((finalCompleted / totalTasks) * 100)}%`;
+        }
+
+        window.copyFullSummary = function() {
+            const summary = `📋 CLOSE HANDOVER\nDate: ${document.getElementById('date-display').innerText}\nStaff: ${document.getElementById('closing-staff-name').value}\nMOD: ${document.getElementById('mod-toggle').checked ? document.getElementById('mod-name').value : "N/A"}\nClocked Out: ${localStorage.getItem('audit_clockout_time') || "Pending"}\n\nNotes:\n${document.getElementById('opening-notes').value || "None."}`;
+            copyToClipboard(summary);
+            showFeedback("Summary Copied");
+        };
+
+        window.showClearConfirmation = () => document.getElementById('clearModal').classList.remove('hidden');
+        window.closeModal = () => document.getElementById('clearModal').classList.add('hidden');
+        window.clearCurrentTasks = () => { localStorage.clear(); location.reload(); };
+
+        window.onload = () => {
+            updateDateTime();
+            document.getElementById('closing-staff-name').value = localStorage.getItem('audit_name') || '';
+            document.getElementById('mod-name').value = localStorage.getItem('audit_mod_name') || '';
+            document.getElementById('opening-notes').value = localStorage.getItem('audit_notes') || '';
+            const modEnabled = localStorage.getItem('audit_mod_enabled') === 'true';
+            document.getElementById('mod-toggle').checked = modEnabled;
+            if (modEnabled) document.getElementById('mod-input-container').classList.add('visible');
+            if (localStorage.getItem('audit_clockout_enabled') === 'true') {
+                document.getElementById('clockout-toggle').checked = true;
+                const clockTimeBadge = document.getElementById('clockout-time-badge');
+                clockTimeBadge.innerText = localStorage.getItem('audit_clockout_time');
+                clockTimeBadge.classList.remove('hidden');
+            }
+            currentShift = localStorage.getItem('audit_shift') || 'weekday';
+            setShift(currentShift);
+        };
+    </script>
+</body>
+</html>
