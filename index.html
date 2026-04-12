@@ -288,7 +288,7 @@
         <header class="mb-8">
             <h1 class="audit-title">Closing Checklists &<br>Handover</h1>
             <div class="flex justify-between items-center mt-6">
-                <button onclick="renderView(currentView)" class="text-emerald-500 font-bold text-sm">New Session.</button>
+                <button id="session-marker" class="text-emerald-500 font-bold text-sm">New Session.</button>
                 <button onclick="showClearConfirmation()" class="btn-clear">Clear All</button>
             </div>
         </header>
@@ -603,6 +603,31 @@
                 container.appendChild(sectionDiv);
             });
             updateProgress();
+            updateSessionMarker();
+        }
+
+        function updateSessionMarker() {
+            const marker = document.getElementById('session-marker');
+            let hasData = false;
+            
+            // Check if any significant fields have data
+            if (localStorage.getItem('audit_name') || 
+                localStorage.getItem('audit_notes') || 
+                localStorage.getItem('audit_clockout_enabled') === 'true') {
+                hasData = true;
+            }
+            
+            // Check if any tasks are completed in either view
+            if (!hasData) {
+                const barTasks = JSON.parse(localStorage.getItem('audit_state_bar') || '{}');
+                const floorTasks = JSON.parse(localStorage.getItem('audit_state_floor_boh') || '{}');
+                if (Object.keys(barTasks).length > 0 || Object.keys(floorTasks).length > 0) {
+                    hasData = true;
+                }
+            }
+            
+            marker.innerText = hasData ? "Saved Session." : "New Session.";
+            marker.className = hasData ? "text-blue-500 font-bold text-sm" : "text-emerald-500 font-bold text-sm";
         }
 
         window.toggleTask = function(id) {
@@ -616,8 +641,12 @@
             const isChecked = document.getElementById(`${p}-toggle`).checked;
             document.getElementById(`${p}-input-container`).classList.toggle('visible', isChecked);
             localStorage.setItem(`audit_${p.replace('-','_')}_enabled`, isChecked);
+            updateSessionMarker();
         };
-        window.saveGenericList = (p) => localStorage.setItem(`audit_${p.replace('-','_')}_list`, document.getElementById(`${p}-list-input`).value);
+        window.saveGenericList = (p) => {
+            localStorage.setItem(`audit_${p.replace('-','_')}_list`, document.getElementById(`${p}-list-input`).value);
+            updateSessionMarker();
+        };
         window.copySpecificList = (i, t) => {
             const val = document.getElementById(i).value;
             if (!val || val.trim() === "") { showFeedback("List is empty"); return; }
@@ -646,6 +675,7 @@
             const isChecked = document.getElementById('mod-toggle').checked;
             document.getElementById('mod-input-container').classList.toggle('visible', isChecked);
             localStorage.setItem('audit_mod_enabled', isChecked);
+            updateSessionMarker();
         };
 
         window.handleClockoutToggle = () => {
@@ -662,6 +692,7 @@
             }
             localStorage.setItem('audit_clockout_enabled', isChecked);
             updateProgress(); 
+            updateSessionMarker();
         };
 
         window.switchView = (view) => {
@@ -673,8 +704,12 @@
         window.saveName = () => {
             localStorage.setItem('audit_name', document.getElementById('closing-staff-name').value);
             localStorage.setItem('audit_mod_name', document.getElementById('mod-name').value);
+            updateSessionMarker();
         };
-        window.saveNotes = () => localStorage.setItem('audit_notes', document.getElementById('opening-notes').value);
+        window.saveNotes = () => {
+            localStorage.setItem('audit_notes', document.getElementById('opening-notes').value);
+            updateSessionMarker();
+        };
 
         function updateProgress() {
             const tasks = ALL_CLOSING_TASKS[currentView].flatMap((s, sIndex) => s.tasks.map((_, tIndex) => `${sIndex}-${tIndex}`));
@@ -712,6 +747,7 @@
             }
             currentShift = localStorage.getItem('audit_shift') || 'weekday';
             setShift(currentShift);
+            updateSessionMarker();
         };
     </script>
 </body>
