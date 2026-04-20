@@ -199,6 +199,10 @@
             white-space: nowrap;
         }
 
+        .target-tag.hidden {
+            display: none;
+        }
+
         .toggle-container {
             position: relative;
             display: inline-block;
@@ -315,6 +319,13 @@
         <div class="mb-8 space-y-2">
             <div class="flex items-center justify-between px-1">
                 <p class="text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest">Closing Type</p>
+                <div class="flex items-center gap-2">
+                    <span class="text-[0.6rem] font-bold text-gray-400 uppercase tracking-tight">Target Times</span>
+                    <label class="toggle-container scale-75 origin-right">
+                        <input type="checkbox" id="times-visibility-toggle" onchange="handleTimesVisibilityToggle()" class="toggle-input" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
             </div>
             <div class="flex gap-2">
                 <div id="shift-weekday" onclick="setShift('weekday')" class="shift-pill active">Weekday (9pm)</div>
@@ -552,11 +563,20 @@
             `;
         }
 
+        function handleTimesVisibilityToggle() {
+            const isVisible = document.getElementById('times-visibility-toggle').checked;
+            localStorage.setItem('audit_times_visible', isVisible);
+            renderView(currentView);
+        }
+
         function renderView(viewKey) {
             currentView = viewKey;
             taskState = JSON.parse(localStorage.getItem('audit_state_' + currentView) || '{}');
             const container = document.getElementById('checklist-container');
             container.innerHTML = '';
+            
+            const timesVisible = localStorage.getItem('audit_times_visible') !== 'false';
+            document.getElementById('times-visibility-toggle').checked = timesVisible;
 
             ALL_CLOSING_TASKS[viewKey].forEach((section, sIndex) => {
                 const sectionDiv = document.createElement('div');
@@ -589,7 +609,7 @@
                                 <div class="checkbox-custom mt-0.5 ${isDone ? 'checked' : ''}">${isDone ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>' : ''}</div>
                                 <div class="flex-1 flex items-start">
                                     <p class="text-sm font-semibold ${isDone ? 'text-gray-400' : 'text-gray-800'}">${taskText}</p>
-                                    ${!isDone ? `<span class="target-tag">by ${targetTime}</span>` : `<span class="timestamp-badge ml-auto">${doneTime}</span>`}
+                                    ${!isDone ? `<span class="target-tag ${timesVisible ? '' : 'hidden'}">by ${targetTime}</span>` : `<span class="timestamp-badge ml-auto">${doneTime}</span>`}
                                 </div>
                             </div>
                             ${extraHtml}
@@ -739,3 +759,5 @@
     </script>
 </body>
 </html>
+
+
